@@ -1,50 +1,68 @@
-# Welcome to your Expo app 👋
+# react-native-earl-gamepad-example
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Small Expo demo that shows using a controller in React Native via
+`react-native-earl-gamepad` (WebView-based bridge). It includes a tiny
+collect-the-dot game (Game mode) and a visual controller inspector (Debug
+mode).
 
-## Get started
+## Features
 
-1. Install dependencies
+-   Renders the WebView-based gamepad bridge and consumes state via
+    `useGamepad`.
+-   Game mode: move a player with left stick or D-pad, collect orange targets,
+    score counter, button-driven effects (rotation, scale, turbo).
+-   Debug mode: visual controller state using `GamepadDebug`.
+-   Button HUD in-game showing all buttons; pressed ones highlight.
+-   Uses `requestAnimationFrame` for the game loop (avoid timer drift).
 
-   ```bash
-   npm install
-   ```
+## Quick start
 
-2. Start the app
+Prerequisites: Node.js, npm/yarn, and an Expo-capable device or simulator.
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Install dependencies:
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Start the Metro dev server:
 
-## Learn more
+```bash
+npx expo start
+# or
+npm start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Open on your device/emulator and pair a Bluetooth controller (PS4/generic
+controllers are known to work). The app reads the first connected controller
+(`navigator.getGamepads()[0]`).
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Files of interest
 
-## Join the community
+-   `app/_layout.tsx` — root stack with header shown.
+-   `app/index.tsx` — main screen: mounts the gamepad bridge, game loop, and
+    switches between Game and Debug modes.
+-   `components/GameView.tsx` — game UI (player, target, HUD).
+-   `components/DebugView.tsx` — wraps `GamepadDebug` for the visual inspector.
 
-Join our community of developers creating universal apps.
+## Controller notes & tips
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+-   Tested controllers: PS4 and generic Bluetooth controllers (standard mapping).
+-   Keep the bridge mounted (the app keeps it mounted while swapping modes) so
+    you don't lose transient events.
+-   Default deadzone is `0.12` in this example; adjust if your sticks are noisy.
+-   Use the Debug mode to visually confirm button/axis mappings.
+
+## Performance tips
+
+-   Movement/game loops should use `requestAnimationFrame` (this project does)
+    to avoid jitter caused by timer drift.
+
+## Troubleshooting
+
+-   If you see an Invariant Violation about `RNCWebView` being registered twice,
+    check for multiple `react-native-webview` installs: `npm ls react-native-webview`.
+
+## License
+
+MIT
